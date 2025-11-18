@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Security Awareness — Created Walle-d-little</title>
+
+<style>
+  :root{
+    --bg:#0d0d0d;
+    --card:#111;
+    --accent:#6a00ff;
+    --muted:#bfbfbf;
+  }
+
+  /* --------- Base ---------- */
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background:var(--bg);
+    color:#fff;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    scroll-behavior:smooth;
+    line-height:1.5;
+  }
+  img{max-width:100%;display:block;border-radius:10px}
+
+  /* --------- Hero ---------- */
+  .hero{
+    min-height:60vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:48px 20px;
+    background:linear-gradient(120deg,#1a0033 0%, #000 60%);
+    position:relative;
+    overflow:hidden;
+  }
+  .hero::after{
+    content:"";
+    position:absolute; inset:0;
+    background: radial-gradient(circle at 10% 20%, rgba(106,0,255,0.06), transparent 6%),
+                radial-gradient(circle at 90% 80%, rgba(0,200,255,0.03), transparent 8%);
+    pointer-events:none;
+  }
+  .hero .inner{max-width:980px}
+  h1.title{
+    margin:0;
+    font-size:clamp(28px,6vw,56px);
+    letter-spacing:-0.02em;
+    font-weight:800;
+    background:linear-gradient(90deg,#c7a2ff,#65e1ff);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  p.lead{margin:12px 0 0;color:var(--muted);font-size:1.05rem}
+
+  /* --------- Cards ---------- */
+  .card-section{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:18px;
+    padding:28px;
+    max-width:1200px;
+    margin:0 auto;
+  }
+  .card{
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border:1px solid rgba(255,255,255,0.04);
+    padding:18px;
+    border-radius:14px;
+    cursor:pointer;
+    transition:transform .28s ease, box-shadow .28s ease;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+  }
+  .card:hover{ transform:translateY(-8px) scale(1.02); box-shadow:0 18px 40px rgba(106,0,255,0.13) }
+  .card h3{margin:0;font-size:18px}
+  .card p{margin:8px 0 0;color:var(--muted);font-size:14px}
+
+  /* --------- Info boxes ---------- */
+  .container{max-width:1100px;margin:24px auto;padding:0 18px}
+  .info-box{
+    background:var(--card);
+    border-radius:12px;
+    padding:20px;
+    margin:22px 0;
+    border:1px solid rgba(255,255,255,0.04);
+    box-shadow:0 8px 30px rgba(0,0,0,0.5);
+    display:grid;
+    grid-template-columns: 1fr;
+    gap:14px;
+    opacity:0; transform:translateY(18px);
+    transition:opacity .7s ease, transform .7s cubic-bezier(.2,.9,.2,1);
+  }
+  .info-box.visible{ opacity:1; transform:none }
+  .info-title{font-size:22px;margin:0;font-weight:700;color:#e9ddff}
+  .info-text{color:var(--muted);font-size:15.5px}
+  .subpoints{margin-left:14px;color:#d7d7d7}
+  .info-media{margin-top:6px;border-radius:10px;overflow:hidden}
+
+  /* make two-column for wide screens */
+  @media(min-width:900px){
+    .info-box{grid-template-columns: 1fr 320px; align-items:center}
+    .info-media img{height:210px; width:100%; object-fit:cover}
+  }
+
+  /* --------- Quiz ---------- */
+  .quiz-box{
+    background:linear-gradient(180deg, rgba(20,20,30,0.6), rgba(10,10,14,0.6));
+    border-radius:12px;
+    padding:22px;
+    margin:30px 18px;
+    border:1px solid rgba(106,0,255,0.12);
+    opacity:0; transform:translateY(18px); transition:opacity .7s, transform .7s;
+  }
+  .quiz-box.visible{opacity:1; transform:none}
+  .quiz-box h2{margin-top:0; text-align:center; color:#f0e8ff}
+  .question-block{background:#121212;border-radius:10px;padding:12px;margin-bottom:14px;border:1px solid rgba(255,255,255,0.03)}
+  .question-title{font-weight:700}
+  .options label{display:block;margin:8px 0;cursor:pointer;color:var(--muted)}
+  .submit-btn{display:inline-block;background:var(--accent);color:#fff;padding:12px 18px;border-radius:10px;border:none;font-weight:700;cursor:pointer;margin-top:6px}
+  .result{margin-top:16px;background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:12px;border-radius:10px;color:var(--muted)}
+
+  /* --------- Q/A Section ---------- */
+  .qa-section{max-width:1100px;margin:28px auto;padding:18px}
+  .qa-card{background:var(--card);padding:14px;border-radius:10px;margin-bottom:12px;border:1px solid rgba(255,255,255,0.03)}
+  .qa-question{font-weight:700;color:#e6d7ff;cursor:pointer}
+  .qa-answer{margin-top:8px;color:var(--muted);display:none}
+  .qa-card.visible{opacity:1; transform:none}
+
+  /* --------- Footer ---------- */
+  footer.site-footer{
+    margin-top:40px;
+    padding:28px 18px;
+    background:linear-gradient(90deg, rgba(106,0,255,0.12), rgba(65,120,255,0.03));
+    border-top:1px solid rgba(255,255,255,0.03);
+  }
+  .footer-inner{max-width:1100px;margin:0 auto;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+  .footer-left{color:var(--muted)}
+  .footer-right a{color:var(--muted);text-decoration:none;margin-left:12px}
+  .footer-brand{font-weight:700;color:#fff}
+
+  /* small screens */
+  @media(max-width:560px){
+    .footer-inner{flex-direction:column;align-items:center}
+    .footer-right{margin-top:10px}
+    .hero{padding:40px 14px}
+  }
+
+  /* subtle focus for accessibility */
+  .card:focus, .submit-btn:focus, .qa-question:focus { outline:3px solid rgba(106,0,255,0.12); outline-offset:3px; }
+</style>
+</head>
+<body>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="inner">
+      <h1 class="title">Security Awareness</h1>
+      <p class="lead">Understand threats • Learn prevention • Protect yourself online</p>
+    </div>
+  </header>
+
+  <!-- CARDS -->
+  <section class="card-section container" aria-label="Quick topics">
+    <div class="card" data-target="topic-1" tabindex="0">
+      <h3>Phishing Awareness</h3>
+      <p>Recognize and avoid deceptive messages and links.</p>
+    </div>
+
+    <div class="card" data-target="topic-2" tabindex="0">
+      <h3>Strong Passwords</h3>
+      <p>Create long, unique passwords — or use a manager.</p>
+    </div>
+
+    <div class="card" data-target="topic-3" tabindex="0">
+      <h3>Two-Factor Authentication</h3>
+      <p>Add a second verification step to your accounts.</p>
+    </div>
+
+    <div class="card" data-target="topic-4" tabindex="0">
+      <h3>Safe Browsing</h3>
+      <p>Use HTTPS, updated browsers, and avoid shady downloads.</p>
+    </div>
+
+    <div class="card" data-target="topic-5" tabindex="0">
+      <h3>Social Engineering</h3>
+      <p>Don't be tricked by urgency or impersonation.</p>
+    </div>
+
+    <div class="card" data-target="topic-6" tabindex="0">
+      <h3>Malware Protection</h3>
+      <p>Use antivirus, updates and don't run unknown programs.</p>
+    </div>
+
+    <div class="card" data-target="topic-7" tabindex="0">
+      <h3>Data Privacy</h3>
+      <p>Limit what you share online and manage app permissions.</p>
+    </div>
+
+    <div class="card" data-target="topic-8" tabindex="0">
+      <h3>Digital Footprint</h3>
+      <p>Everything you post can persist — think before you post.</p>
+    </div>
+
+    <div class="card" data-target="topic-9" tabindex="0">
+      <h3>Cyberbullying</h3>
+      <p>How to respond and report online harassment.</p>
+    </div>
+
+    <div class="card" data-target="topic-10" tabindex="0">
+      <h3>Network Security</h3>
+      <p>Secure your home network and routers.</p>
+    </div>
+
+    <div class="card" data-target="topic-11" tabindex="0">
+      <h3>VPN &amp; Encryption</h3>
+      <p>Encrypt your traffic — especially on public Wi-Fi.</p>
+    </div>
+
+    <div class="card" data-target="topic-12" tabindex="0">
+      <h3>Cloud Security</h3>
+      <p>Protect cloud accounts with strong controls and backups.</p>
+    </div>
+  </section>
+
+  <!-- TOPIC SECTIONS (12) -->
+  <main class="container" id="topics-container">
+
+    <!-- Topic 1 -->
+    <article id="topic-1" class="info-box reveal">
+      <div>
+        <div class="info-title">Phishing Awareness</div>
+        <div class="info-text">
+          Phishing is when attackers masquerade as trustworthy parties (banks, services, colleagues)
+          to trick you into revealing credentials, OTPs, or installing malware.
+        </div>
+        <div class="subpoints">
+          • Check sender address and domain. <br>
+          • Hover links before clicking. <br>
+          • Be suspicious of urgent requests. <br>
+          • Verify via official channels if unsure.
+        </div>
+      </div>
+      <div class="info-media">
+        <!-- fixed/stable CDN image -->
+        <img alt="Phishing email example" src="https://picsum.photos/id/1025/900/600">
+      </div>
+    </article>
+
+    <!-- Topic 2 -->
+    <article id="topic-2" class="info-box reveal">
+      <div>
+        <div class="info-title">Strong Passwords</div>
+        <div class="info-text">
+          Strong passwords are long, unique, and random. Reusing passwords across sites is dangerous.
+        </div>
+        <div class="subpoints">
+          • Use at least 12 characters. <br>
+          • Mix upper/lowercase, numbers & symbols. <br>
+          • Use a reputable password manager to create & store them.
+        </div>
+      </div>
+      <div class="info-media">
+        <img alt="Strong password" src="https://picsum.photos/id/1050/900/600">
+      </div>
+    </article>
+
+    <!-- Topic 3 -->
+    <article id="topic-3" class="info-box reveal">
+      <div>
+        <div class="info-title">Two-Factor Authentication (2FA)</div>
+        <div class="info-text">
+          2FA requires a second verification (SMS, authenticator app, hardware key) after entering your password.
+        </div>
+        <div class="subpoints">
+          • Prefer authenticator apps or hardware keys over SMS. <br>
+          • Enable 2FA for email, banking and social accounts. <br>
+          • Keep backup codes secure.
+        </div>
+      </div>
+      <div class="info-media">
+        <img alt="Two factor authentication" src="https://picsum.photos/id/1005/900/600">
+      </div>
+    </article>
+
+    <!-- Topic 4 -->
+    <article id="topic-4" class="info-box reveal">
+      <div>
+        <div class="info-title">Safe Browsing</div>
+        <div class="info-text">
+          Safe browsing practices reduce the chance of infection or data theft while online.
+        </div>
+        <div class="subpoints">
+          • Look for HTTPS and the lock icon. <br>
+          • Avoid unknown downloads and cracked software. <br>
+          • Keep browser & plugins updated.
+        </div>
+      </div>
+      <div class="info-media">
+        <img alt="Safe browsing" src="https://picsum.photos/id/1060/900/600">
+      </div>
+    </article>
+
+    <!-- Topic 5 -->
+    <article id="topic-5" class="info-box reveal">
+      <div>
+        <div class="info-title">Social Engineering</div>
+        <div class="info-text">
+          Social engineering exploits human trust and emotions — attackers may impersonate colleagues or officials.
+        </div>
+        <div class="subpoints">
+          • Don't act under pressure; verify identity. <br>
+          • Be cautious with phone calls asking for sensitive info. <br>
+          • Train teams to spot manipulation tactics.
+        </div>
+      </div>
+      <div class="info-media">
+        <img alt="Social engineering" src="https://picsum.photos/id/1027/900/600">
+      </div>
+    </article>
+
+    <!-- Topic 6 -->
+    <article id="topic-6" class="info-box reveal">
+      <div>
+        <div class="info-title">Malware Protection</div>
+        <div class="info-text">
+          Malware includes viruses, spyware, and ransomware. It can steal or lock your files and spy on activity.
+        </div>
+        <div class="subpoints">
+          • Install reputable antivirus and keep it updated. <br>
+          • Avoid unknown USBs and attachments. <br>
+          • Regularly back up important data offline.
+        </div>
+      </div>
+      <div class="info-media">
+        <img alt="Malware protection" src="https://picsum.photos/id/1011/900/600">
+      </div>
+    </article>
+
+    <!-- Topic 7 -->
+    <article id="topic-7" class="info-box reveal">
+      <div>
+        <div class="info-title">Data Privacy</div>
+        <div class="info-text">
+          Data privacy is about controlling who can access your personal information and how it's used.
+        </div>
+        <div class="subpoints">
+          • Limit app permissions. <br>
+          • Review privacy settings on social platforms. <br>
+          • Think before sharing personal details.
+        </div>
+      </div>
+      <div class="info-media">
+        <img alt="Data privacy" src="https://picsum.photos/id/1043/900/600">
+      </div>
+    </article>
+
+    <!-- Topic 8 -->
+    <article id="topic-8" class="info-box reveal">
+      <div>
+        <div class="info-title">Digital Footprint</div>
+        <div class="info-text">
+          Your digital footprint is the record of what you post and do online — it can affect future opportunities.
+        </div>
+        <div class="subpoints">
+          • Clean up old accounts. <br>
+          • Use privacy settings and think before posting. <br>
+          • Remember search engines retain cached info.
+        </div>
+      </div>
+      <div class="info-media">
+        <img alt="Digital footprint" src="https://picsum.photos/id/1035/900/600">
+      </div>
+    </article>
+
+    <!-- Topic 9 -->
+    <article id="topic-9" class="info-box reveal">
+      <div>
+        <div class="info-title">Cyberbullying</div>
+        <div class="info-text">
+          Cyberbullying harms mental health. It should be reported to platform moderators and, when needed, authorities.
+        </div>
+        <div class="subpoints">
+          • Block and report abusive users. <br>
+          • Save evidence (screenshots). <br>
+          • Talk to trusted adults or professionals.
+        </div>
+      </div>
+      <div class="info-media">
+        <img alt="Cyberbullying" src="https://picsum.photos/id/1021/900/600">
+      </div>
+    </article>
+
+    <!-- Topic 10 -->
+    <article id="topic-10" class="info-box reveal">
+      <div>
+        <div class="info-title">Network Security</div>
+        <div class="info-text">
+          Network security protects devices and data on local and wide-area networks using controls like firewalls and segmentation.
+        </div>
+        <div class="subpoints">
+          • Change default router passwords. <br>
+          • Use WPA3 or WPA2 for Wi-Fi encryption. <br>
+          • Segment guest network from main devices.
+        </div>
+      </div>
+      <div class="info-media">
+        <img alt="Network security" src="https://picsum.photos/id/1003/900/600">
+      </div>
+    </article>
+
+    <!-- Topic 11 -->
+    <article id="topic-11" class="info-box reveal">
+      <div>
+        <div class="info-title">VPN &amp; Encryption</div>
+        <div class="info-text">
+          VPN encrypts your traffic between you and a server. Encryption protects data at rest and in transit.
+        </div>
+        <div class="subpoints">
+          • Use a trusted VPN on public Wi-Fi. <br>
+          • Prefer services with strong encryption (AES-256). <br>
+          • Encrypt backups and sensitive files.
+        </div>
+      </div>
+      <div class="info-media">
+        <img alt="VPN encryption" src="https://picsum.photos/id/1015/900/600">
+      </div>
+    </article>
+
+    <!-- Topic 12 -->
+    <article id="topic-12" class="info-box reveal">
+      <div>
+        <div class="info-title">Cloud Security</div>
+        <div class="info-text">
+          Cloud services provide convenience but require strong access controls, backups, and monitoring.
+        </div>
+        <div class="subpoints">
+          • Enable 2FA for cloud accounts. <br>
+          • Use strong, unique passwords. <br>
+          • Regularly back up and monitor access logs.
+        </div>
+      </div>
+      <div class="info-media">
+        <img alt="Cloud security" src="https://picsum.photos/id/1033/900/600">
+      </div>
+    </article>
+
+  </main>
+
+  <!-- QUIZ (5 sample questions, shows answers & explanations) -->
+  <section class="quiz-box container reveal" id="quiz">
+    <h2>Security Awareness Quiz</h2>
+
+    <form id="quizForm" aria-label="Security quiz">
+      <!-- Q1 -->
+      <div class="question-block">
+        <div class="question-title">1. What is phishing?</div>
+        <div class="options">
+          <label><input type="radio" name="q1" value="A"> A type of antivirus</label>
+          <label><input type="radio" name="q1" value="B"> A trick to steal information</label>
+          <label><input type="radio" name="q1" value="C"> A networking protocol</label>
+        </div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="question-block">
+        <div class="question-title">2. Which is the strongest password?</div>
+        <div class="options">
+          <label><input type="radio" name="q2" value="A"> iloveyou</label>
+          <label><input type="radio" name="q2" value="B"> Priya2003</label>
+          <label><input type="radio" name="q2" value="C"> U$4k@9!Lm30#</label>
+        </div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="question-block">
+        <div class="question-title">3. What does 2FA provide?</div>
+        <div class="options">
+          <label><input type="radio" name="q3" value="A"> Extra verification step</label>
+          <label><input type="radio" name="q3" value="B"> Free VPN</label>
+          <label><input type="radio" name="q3" value="C"> Faster downloads</label>
+        </div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="question-block">
+        <div class="question-title">4. Why avoid public Wi-Fi for banking?</div>
+        <div class="options">
+          <label><input type="radio" name="q4" value="A"> Because it's slow</label>
+          <label><input type="radio" name="q4" value="B"> Data can be intercepted</label>
+          <label><input type="radio" name="q4" value="C"> It drains battery</label>
+        </div>
+      </div>
+
+      <!-- Q5 -->
+      <div class="question-block">
+        <div class="question-title">5. What should you do with unknown USB drives?</div>
+        <div class="options">
+          <label><input type="radio" name="q5" value="A"> Plug and open files</label>
+          <label><input type="radio" name="q5" value="B"> Scan with antivirus first / avoid if unsure</label>
+          <label><input type="radio" name="q5" value="C"> Share with friends</label>
+        </div>
+      </div>
+
+      <button type="button" class="submit-btn" onclick="checkQuiz()">Check Score & Answers</button>
+      <div id="quizResult" class="result" role="status" aria-live="polite"></div>
+    </form>
+  </section>
+
+  <!-- Q/A Expanded (collapsible) -->
+  <section class="qa-section container">
+    <div class="qa-card reveal">
+      <div class="qa-question" tabindex="0">Q: How do I spot a phishing email?</div>
+      <div class="qa-answer">A: Check sender domain, hover links, look for spelling mistakes and never share OTPs or passwords.</div>
+    </div>
+
+    <div class="qa-card reveal">
+      <div class="qa-question" tabindex="0">Q: Is SMS 2FA safe?</div>
+      <div class="qa-answer">A: SMS 2FA is better than nothing, but authenticator apps and hardware keys are more secure.</div>
+    </div>
+
+    <div class="qa-card reveal">
+      <div class="qa-question" tabindex="0">Q: How often should I update software?</div>
+      <div class="qa-answer">A: Install critical updates as they arrive; for less urgent updates aim for weekly or monthly maintenance.</div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="footer-inner">
+      <div class="footer-left">
+        <div class="footer-brand">Security Awareness</div>
+        <div style="color:var(--muted);font-size:13px;margin-top:6px">Created Walle-d-little • © <span id="year"></span></div>
+      </div>
+      <div class="footer-right">
+        <a href="#" aria-label="Share on Twitter" title="Share">Twitter</a>
+        <a href="#" aria-label="Share on GitHub" title="GitHub">GitHub</a>
+        <a href="#" aria-label="Contact" title="Contact">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+<script>
+/* -------------------------
+   Auto-scroll from cards
+   ------------------------- */
+document.querySelectorAll('.card').forEach(card=>{
+  card.addEventListener('click', () => {
+    const id = card.getAttribute('data-target');
+    const el = document.getElementById(id);
+    if(el){
+      el.scrollIntoView({behavior:'smooth', block:'start'});
+      // briefly highlight
+      el.style.transition = 'box-shadow .6s, border-color .6s';
+      el.style.boxShadow = '0 24px 60px rgba(106,0,255,0.12)';
+      setTimeout(()=> el.style.boxShadow = '', 900);
+    }
+  });
+  // allow keyboard activation (Enter)
+  card.addEventListener('keydown', (ev)=>{
+    if(ev.key === 'Enter' || ev.key === ' ') { card.click(); ev.preventDefault(); }
+  });
+});
+
+/* -------------------------
+   Quiz logic (shows correct answers & explanations)
+   ------------------------- */
+function checkQuiz(){
+  const answers = { q1:'B', q2:'C', q3:'A', q4:'B', q5:'B' };
+  const explanations = {
+    q1: 'Phishing is a technique to trick people into revealing sensitive info.',
+    q2: 'Complex, long strings with symbols are strongest.',
+    q3: '2FA adds another step (authenticator, SMS, key) to verify identity.',
+    q4: 'Public Wi-Fi can be monitored, so sensitive data can be intercepted.',
+    q5: 'Unknown USB drives may contain malware — scan or avoid them.'
+  };
+
+  const form = new FormData(document.getElementById('quizForm'));
+  let score = 0;
+  let detail = '';
+
+  for(const q in answers){
+    const user = form.get(q) || 'Not answered';
+    const correct = answers[q];
+    const ok = user === correct;
+    if(ok) score++;
+    detail += `<div style="margin-bottom:10px;padding:10px;border-radius:8px;background:rgba(255,255,255,0.02)">
+      <strong>${q.toUpperCase()}</strong><br>
+      Your answer: <span style="color:${ok? '#b7ffcc':'#ffb3b3'}">${user}</span><br>
+      Correct answer: <strong>${correct}</strong><br>
+      Explanation: <span style="color:var(--muted)">${explanations[q]}</span>
+    </div>`;
+  }
+
+  document.getElementById('quizResult').innerHTML = `<div style="font-weight:800;color:#fff;margin-bottom:10px">Score: ${score} / ${Object.keys(answers).length}</div>${detail}`;
+  // scroll to result
+  document.getElementById('quizResult').scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+/* -------------------------
+   Q/A toggles
+   ------------------------- */
+document.querySelectorAll('.qa-question').forEach(q=>{
+  q.addEventListener('click', ()=> {
+    const ans = q.nextElementSibling;
+    if(!ans) return;
+    ans.style.display = ans.style.display === 'block' ? 'none' : 'block';
+  });
+  q.addEventListener('keydown', (ev)=>{
+    if(ev.key === 'Enter' || ev.key === ' ') { q.click(); ev.preventDefault(); }
+  });
+});
+
+/* -------------------------
+   Scroll reveal using IntersectionObserver
+   ------------------------- */
+const revealEls = document.querySelectorAll('.reveal, .qa-card, .quiz-box');
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('visible');
+      // Unobserve to avoid repeated triggers
+      io.unobserve(e.target);
+    }
+  });
+},{threshold:0.15});
+
+revealEls.forEach(el => io.observe(el));
+
+/* -------------------------
+   Set footer year
+   ------------------------- */
+document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>
